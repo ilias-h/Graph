@@ -10,7 +10,7 @@
 char ui_getNode();                         /* input a node                  */
 int  ui_getWeight();                       /* input a weight                */
 
-void ui_putTitleList();                    /* print title heading           */
+void ui_putTitleList(int nodes,int edges); /* print title heading           */ //Jag har ändrat här eftersom det blir skit annars. Kanske det donald vill(?) behövs be_size_edge också
 void ui_putTitleMatrix();                  /* print title heading           */
 
 void ui_putNodeError(char c);              /* print node exists error       */

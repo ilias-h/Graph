@@ -13,18 +13,17 @@
 /*****************************************************************************/
 /* global data objects                                                       */
 /*****************************************************************************/
-#define    cbuffsize 81                              /* input buffer sizze   */
 int        echomode=0;                               /* echo mode on/off     */
 int        udirmode=1;                               /* graph: dir / undir   */
-char       cbuff[cbuffsize];                         /* input buffer         */
 
 /****************************************************************************/
 /* User dialogue                                                            */
 /****************************************************************************/
 char ui_getNode() {
+   char c; 
    printf(" Enter node: ");
-   scanf("%s", cbuff); if (echomode) printf(" %c", cbuff[0]);
-   return cbuff[0];
+   scanf("%s", &c); if (echomode) printf(" %c", c);
+   return c;
    }
 int  ui_getWeight() {
    int w;
@@ -35,12 +34,10 @@ int  ui_getWeight() {
 
 void ui_putGraphEmpty()  { printf("\n The graph is empty "); }
 
-void ui_putTitleList(int nnodes, int nedges)
-{ printf("\n\n Adjacency list (%d nodes %d edges): \n\n", nnodes, nedges);}
-
+void ui_putTitleList()   { printf("\n\n Adjacency list: \n\n");}
 void ui_putTitleMatrix() { printf("\n Adjacency matrix: \n");}
 
-void ui_putNodeError(char c)   {
+void ui_putNodeError(char c)   { 
   printf("\n *** ERROR Node %c already exists! ", c);
   }
 
@@ -80,11 +77,12 @@ static void showmode() {
 }
 
 static char ui_get_input() {
+   char c;
    printf("\n Enter choice ==> ");
-   scanf("%s", cbuff); if (echomode) printf(" %c", cbuff[0]);
-   return cbuff[0];
+   scanf("%s", &c); if (echomode) printf(" %c", c);
+   return c;
    }
-
+   
 /*****************************************************************************/
 /*  dispmenu: display the user menu                                          */
 /*****************************************************************************/

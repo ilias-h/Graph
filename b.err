@@ -1,0 +1,12 @@
+begraph.c:45: warning: ‘set_nname’ defined but not used
+begraph.c:46: warning: ‘set_ninfo’ defined but not used
+begraph.c:53: warning: ‘create_n’ defined but not used
+begraph.c:73: warning: ‘ncons’ defined but not used
+begraph.c:74: warning: ‘econs’ defined but not used
+begraph.c:170: warning: ‘get_pos’ defined but not used
+begraph.c:45: warning: ‘set_nname’ defined but not used
+begraph.c:46: warning: ‘set_ninfo’ defined but not used
+begraph.c:53: warning: ‘create_n’ defined but not used
+begraph.c:73: warning: ‘ncons’ defined but not used
+begraph.c:74: warning: ‘econs’ defined but not used
+begraph.c:170: warning: ‘get_pos’ defined but not used

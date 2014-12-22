@@ -19,7 +19,7 @@
 /****************************************************************************/
 void fe_display_adjlist()  {
    if (be_size()==0) ui_putGraphEmpty();
-   else { ui_putTitleList(); be_display_adjlist(); }
+   else { ui_putTitleList(be_size(),0); be_display_adjlist(); }
    }
 
 /****************************************************************************/

@@ -52,12 +52,7 @@ static noderef  set_nodes(noderef N, noderef M) { N->nodes = M; return N; }
 /****************************************************************************/
 static noderef create_n(char c, int w)
 {
-	noderef N = (noderef)malloc(sizeof(nodeelem));
-	set_nname(N,c);
-	set_ninfo(N,w);
-	/*set_edges(N,(noderef)NULL);
-	set_nodes(N,(noderef)NULL);*/
-	return N;
+	return set_ninfo( set_nname((noderef)malloc(sizeof(nodeelem)),c),w);
 }
 
 /****************************************************************************/
@@ -117,7 +112,7 @@ static noderef b_addn(char c, noderef G)
 /****************************************************************************/
 static noderef b_adde(char c, int w, noderef E)
 {
-   printf("\n TO BE DONE fuck you!"); return NULL;
+	return set_edges(create_n(c,w),E);
 }
 
 /****************************************************************************/
@@ -125,23 +120,37 @@ static noderef b_adde(char c, int w, noderef E)
 /****************************************************************************/
 static noderef b_remn(char c, noderef G) {
 
-   printf("\n TO BE DONE "); return NULL;
+	if(!is_empty(G)){
+		if(get_nname(G)==c){
+			return get_nodes(G);
+		}else{
+			set_nodes(G,b_remn(c,get_nodes(G)));
+		}
+	}
+	return G;			
 }
 
 /****************************************************************************/
 /* REMove an edge from the graph                                            */
 /****************************************************************************/
 static noderef b_reme(char c, noderef E) {
-
-   printf("\n TO BE DONE "); return NULL;
+	if(!is_empty(E)){
+		if(get_nname(E)==c)
+			return get_edges(E);
+		else
+			set_edges(E,b_reme(c,get_edges(E)));
+	}
+	return E;
 }
 
 /****************************************************************************/
 /* REMove all edges for a given node from the graph                         */
 /****************************************************************************/
 static void b_remalle(char c, noderef G) {
-
-   printf("\n TO BE DONE ");
+	if(!is_empty(G)){
+		set_edges(G,b_reme(c,get_edges(G)));
+		b_remalle(c,get_nodes(G));
+	}
 }
 
 /****************************************************************************/
@@ -156,14 +165,20 @@ static noderef b_findn(char c, noderef G) {
 	}else 
 		return NULL;
 
-      //printf("\n TO BE DONE "); return NULL;
 }
 
 /****************************************************************************/
 /* FIND an edge in the graph                                                */
 /****************************************************************************/
 static noderef b_finde(char c, noderef E) {
-      printf("\n TO BE DONE "); return NULL;
+	if(!is_empty(E)){
+		if(get_nname(E)==c)
+			return E;
+		else	
+			return b_finde(c,get_edges(E));
+	}else 
+		return NULL;
+
 }
 
 /****************************************************************************/
@@ -174,9 +189,6 @@ static int b_size(noderef G) {
 		return 1+b_size(get_nodes(G));
 	else 
 		return 0;
-
-//printf("\n TO BE DONE fuck you!"); return 0;
-
 }
 
 /****************************************************************************/
@@ -194,8 +206,15 @@ static int b_size(noderef G) {
 /* get_pos("b") will give 1 (and hence AM[0][1] is set to 3 i.e. a-3-b)     */
 /****************************************************************************/
 static int get_pos(char fname)  {
+	int i=0;
+	noderef T=G;
+	while(get_nname(T)!=fname){
+		i++;
+		T = get_nodes(T);
+	}
+	return i;
 
-   printf("\n TO BE DONE "); return 0;
+   //printf("\n TO BE DONE "); return 0;
 }
 
 /****************************************************************************/
@@ -207,8 +226,13 @@ static int get_pos(char fname)  {
 /*                                    c |  2       7       0                */
 /****************************************************************************/
 static void cre_adjmat(noderef G) {
-
-   printf("\n TO BE DONE ");
+	if(!is_empty(G)){
+		noderef T = G;
+		while(!is_empty(T=get_edges(T))){
+			adjmat[get_pos(get_nname(G))][get_pos(get_nname(T))] = get_ninfo(T);
+		}	
+		cre_adjmat(get_nodes(G));
+	}
 }
 
 /****************************************************************************/

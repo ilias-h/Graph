@@ -266,7 +266,42 @@ static void b_mdisp(noderef G) {
 /****************************************************************************/
 /* GRAPH ALGORITHMS                                                         */
 /****************************************************************************/
-void b_Dijkstra() { /* TO DO */ }
+void b_Dijkstra() { 
+	noderef Curr = G
+	noderef T = Curr;
+	char D[b_size(G)]={'-'};
+	char E[b_size(G)]={'-'};
+	char L[b_size(G)]={'-'};
+	int visited[b_size(G)]={0}, weightto = 0,i,condition, least = INT_MAX;	
+	do{
+		T=Curr;
+		while(!is_empty(T=get_edges(T))){
+			if(D[b_pos(get_nname(T))]=='-' || (get_ninfo(T)+weightto)<(int)D[b_pos(get_nname(T)]){
+
+				D[b_pos(get_nname(T)] = (char)(get_ninfo(T)+weightto);
+				L[b_pos(get_nname(T)] = (char)get_ninfo(T);
+				E[b_pos(get_nname(T)] = get_nname(Curr);
+			
+			}	
+		}
+		visited[get_pos(get_nname(Curr))]=1;
+		T=G;
+		for(i=0;i<b_size(G);i++){
+			T = get_nodes(T);
+			condition = 0;
+			if(D[i]!='-' && ((int)D[i]+weightto)<=least && visited[i]!=1){
+				least = (int)D[i]+weightto;
+				condition = 1;
+				Curr = T;
+				int temp = i;
+			}
+		}
+		visited[temp] = i;
+			
+
+	}while(condition);
+
+ }
 void b_Floyd()    { /* TO DO */ }
 void b_Warshall() { /* TO DO */ }
 void b_Prim()     { /* TO DO */ }

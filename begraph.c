@@ -266,42 +266,81 @@ static void b_mdisp(noderef G) {
 /****************************************************************************/
 /* GRAPH ALGORITHMS                                                         */
 /****************************************************************************/
-void b_Dijkstra() { 
-	noderef Curr = G
+void b_Dijkstra() {
+	
+	if(is_empty(G))
+		return;
+	noderef Curr = G;
 	noderef T = Curr;
-	char D[b_size(G)]={'-'};
-	char E[b_size(G)]={'-'};
-	char L[b_size(G)]={'-'};
-	int visited[b_size(G)]={0}, weightto = 0,i,condition, least = INT_MAX;	
-	do{
-		T=Curr;
-		while(!is_empty(T=get_edges(T))){
-			if(D[b_pos(get_nname(T))]=='-' || (get_ninfo(T)+weightto)<(int)D[b_pos(get_nname(T)]){
+	
+	int weightto = 0,i,condition, least = INT_MAX,temp=0;
 
-				D[b_pos(get_nname(T)] = (char)(get_ninfo(T)+weightto);
-				L[b_pos(get_nname(T)] = (char)get_ninfo(T);
-				E[b_pos(get_nname(T)] = get_nname(Curr);
-			
-			}	
-		}
-		visited[get_pos(get_nname(Curr))]=1;
-		T=G;
-		for(i=0;i<b_size(G);i++){
-			T = get_nodes(T);
-			condition = 0;
-			if(D[i]!='-' && ((int)D[i]+weightto)<=least && visited[i]!=1){
-				least = (int)D[i]+weightto;
-				condition = 1;
-				Curr = T;
-				int temp = i;
+	int * visited = (int *)malloc(sizeof(int)*b_size(G));
+
+	int * D = (int *)malloc(sizeof(char)*b_size(G));
+	char * E = (char *)malloc(sizeof(char)*b_size(G));
+	int * L = (int *)malloc(sizeof(char)*b_size(G));
+
+	for(i=0; i<b_size(G);i++){
+		D[i]=INT_MAX;
+		E[i]=get_nname(G);
+		L[i]=INT_MAX;
+	}
+
+	do{
+		least = INT_MAX;
+		T=Curr;
+		printf("Hejhej\n\n");
+		while(!is_empty(T=get_edges(T))){
+			if((D[get_pos(get_nname(T))]==INT_MAX || (get_ninfo(T)+weightto)<D[get_pos(get_nname(T))]) && visited[get_pos(get_nname(T))]!=1){
+				D[get_pos(get_nname(T))] = get_ninfo(T)+weightto;
+				L[get_pos(get_nname(T))] = get_ninfo(T);
+				E[get_pos(get_nname(T))] = get_nname(Curr);
 			}
 		}
-		visited[temp] = i;
-			
 
+	printf("Första loopen klar\n\n");
+
+	visited[get_pos(get_nname(Curr))]=1;
+	T=G;
+	condition = 0;
+	for(i=0;i<b_size(G);i++){
+		if( D[i]!='-' && (D[i]+weightto)<least && visited[i]!=1){
+			least = D[i]+weightto;
+			condition = 1;
+			Curr = T;
+			temp = i;
+		}
+		T = get_nodes(T);
+	}
+
+	visited[temp] = 1;
+	weightto = least;
+	
 	}while(condition);
+	
 
- }
+	for(i=0;i<b_size(G);i++){
+		if(D[i]==INT_MAX)
+			printf("   -   ");
+		else
+			printf("  %d  ",D[i]);
+	}
+
+	printf("\n");
+
+	for(i=0;i<b_size(G);i++)
+		printf("  %c  ",E[i]);
+
+	printf("\n");
+
+	for(i=0;i<b_size(G);i++){
+		if(L[i]==INT_MAX)
+			printf("   -   ");
+		else
+			printf("  %d  ",L[i]);
+	}
+}
 void b_Floyd()    { /* TO DO */ }
 void b_Warshall() { /* TO DO */ }
 void b_Prim()     { /* TO DO */ }

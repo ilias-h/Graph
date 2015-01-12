@@ -341,7 +341,43 @@ void b_Dijkstra() {
 			printf("  %d  ",L[i]);
 	}
 }
-void b_Floyd()    { /* TO DO */ }
+void b_Floyd(){
+	
+	cre_adjmat(G);
+	int waymat[MAXNOD][MAXNOD];
+	int i,j,k,size=b_size(G);
+
+	for(i=0;i<size;i++){
+		for(j=0;j<size;j++){
+			if(adjmat[i][j]==0 && i!=j)
+				waymat[i][j]=9999;
+			else
+				waymat[i][j]=adjmat[i][j];
+		}
+	}
+
+	for(k=0;k<size;k++){
+		for(i=0;i<size;i++){
+			for(j=0;j<size;j++){
+				if(waymat[i][j] > waymat[i][k] + waymat[k][j]){
+					waymat[i][j] = waymat[i][k] + waymat[k][j];
+				}
+			}
+		}
+	}
+
+	//HERE IS PRINT SHIT
+
+	for(i=0;i<size;i++){
+		for(j=0;j<size;j++){
+			printf(" %d ",waymat[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+	
+}
+
 void b_Warshall() { /* TO DO */ }
 void b_Prim()     { 
 	

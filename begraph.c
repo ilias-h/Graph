@@ -343,7 +343,71 @@ void b_Dijkstra() {
 }
 void b_Floyd()    { /* TO DO */ }
 void b_Warshall() { /* TO DO */ }
-void b_Prim()     { /* TO DO */ }
+void b_Prim()     { 
+	
+	noderef Vn = create_n(get_nname(G),0);
+	set_edges(Vn,get_edges(G));
+	noderef En = (noderef)NULL, T, S, U, N;
+	int least;
+	
+	while(b_size(G) > b_size(Vn)){
+		least = INT_MAX;
+		S = Vn;
+
+		while(!is_empty(S)){
+			T = get_edges(S);
+			while(!is_empty(T)){
+				if(get_ninfo(T)<least && is_empty(b_findn(get_nname(T),Vn))){
+					U=T;
+					N=S;
+					least = get_ninfo(T);
+				}
+				T = get_edges(T);
+			}
+			S = get_nodes(S);
+		}
+		printf("\nbara namn på noderna U = %c och N = %c\n",get_nname(U),get_nname(N));
+	
+		Vn = b_addn(get_nname(U),Vn);
+		set_edges(b_findn(get_nname(U),Vn),get_edges(b_findn(get_nname(U),G)));
+
+		En = b_addn(get_nname(U),En);
+		set_edges(b_findn(get_nname(U),En),create_n(get_nname(N),least));
+
+		printf("\n");
+		T=En;
+		while(!is_empty(T)){
+			printf(" %c ",get_nname(T));
+			T = get_nodes(T);
+		}
+
+		printf("\n");
+
+		T = En;
+		printf("\n");
+		while(!is_empty(T)){
+			printf("   %c och edgen är %d", get_nname(T), get_ninfo(get_edges(T)));
+			T = get_nodes(T);
+		}
+		printf("\n");
+
+	}
+
+	printf("\n\nResultat:\n");
+	while(!is_empty(Vn)){
+		printf(" %c ",get_nname(Vn));
+		Vn = get_nodes(Vn);
+	}
+	printf("\n\n");
+
+
+	T = En;
+	while(!is_empty(T)){
+		printf(" %c - %d - %c  \n",get_nname(T),get_ninfo(get_edges(T)),get_nname(get_edges(T)));
+		T = get_nodes(T);
+	}
+
+}
 
 void b_dispSPT()  { /* TO DO */ }
 void b_dispFm()   { /* TO DO */ }

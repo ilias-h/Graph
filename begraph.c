@@ -8,6 +8,7 @@
 /****************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 /****************************************************************************/
 /* define types & constants                                                 */
@@ -31,6 +32,15 @@ typedef struct nodeelem {
 /****************************************************************************/
 static noderef G     = (noderef) NULL;          /* adjacency list           */
 static int     adjmat[MAXNOD][MAXNOD];          /* adjacency matrix         */
+
+static int * D;					/* Till Dijstra             */
+static char * E;				/*                          */
+static int * L;					/*                          */
+
+static int waymat[MAXNOD][MAXNOD];		/* Till Floyd-Warshall      */
+
+static int dist[MAXNOD];			/* Till Prim		    */
+static char close[MAXNOD];			/*                          */
 
 /****************************************************************************/
 /* private operations on the node - basic operationa                        */
@@ -266,10 +276,13 @@ static void b_mdisp(noderef G) {
 /****************************************************************************/
 /* GRAPH ALGORITHMS                                                         */
 /****************************************************************************/
+
+
 void b_Dijkstra() {
 	
 	if(is_empty(G))
 		return;
+
 	noderef Curr = G;
 	noderef T = Curr;
 	
@@ -277,9 +290,9 @@ void b_Dijkstra() {
 
 	int * visited = (int *)malloc(sizeof(int)*b_size(G));
 
-	int * D = (int *)malloc(sizeof(char)*b_size(G));
-	char * E = (char *)malloc(sizeof(char)*b_size(G));
-	int * L = (int *)malloc(sizeof(char)*b_size(G));
+	D = (int *)malloc(sizeof(char)*b_size(G));
+	E = (char *)malloc(sizeof(char)*b_size(G));
+	L = (int *)malloc(sizeof(char)*b_size(G));
 
 	for(i=0; i<b_size(G);i++){
 		D[i]=INT_MAX;
@@ -290,7 +303,7 @@ void b_Dijkstra() {
 	do{
 		least = INT_MAX;
 		T=Curr;
-		printf("Hejhej\n\n");
+
 		while(!is_empty(T=get_edges(T))){
 			if((D[get_pos(get_nname(T))]==INT_MAX || (get_ninfo(T)+weightto)<D[get_pos(get_nname(T))]) && visited[get_pos(get_nname(T))]!=1){
 				D[get_pos(get_nname(T))] = get_ninfo(T)+weightto;
@@ -299,52 +312,30 @@ void b_Dijkstra() {
 			}
 		}
 
-	printf("Första loopen klar\n\n");
+		visited[get_pos(get_nname(Curr))]=1;
+		T=G;
+		condition = 0;
 
-	visited[get_pos(get_nname(Curr))]=1;
-	T=G;
-	condition = 0;
-	for(i=0;i<b_size(G);i++){
-		if( D[i]!='-' && (D[i]+weightto)<least && visited[i]!=1){
-			least = D[i]+weightto;
-			condition = 1;
-			Curr = T;
-			temp = i;
+		for(i=0;i<b_size(G);i++){
+			if( D[i]!='-' && (D[i]+weightto)<least && visited[i]!=1){
+				least = D[i]+weightto;
+				condition = 1;
+				Curr = T;
+				temp = i;
+			}
+			T = get_nodes(T);
 		}
-		T = get_nodes(T);
-	}
 
-	visited[temp] = 1;
-	weightto = least;
+		visited[temp] = 1;
+		weightto = least;
 	
 	}while(condition);
 	
-
-	for(i=0;i<b_size(G);i++){
-		if(D[i]==INT_MAX)
-			printf("   -   ");
-		else
-			printf("  %d  ",D[i]);
-	}
-
-	printf("\n");
-
-	for(i=0;i<b_size(G);i++)
-		printf("  %c  ",E[i]);
-
-	printf("\n");
-
-	for(i=0;i<b_size(G);i++){
-		if(L[i]==INT_MAX)
-			printf("   -   ");
-		else
-			printf("  %d  ",L[i]);
-	}
 }
+
 void b_Floyd(){
 	
 	cre_adjmat(G);
-	int waymat[MAXNOD][MAXNOD];
 	int i,j,k,size=b_size(G);
 
 	for(i=0;i<size;i++){
@@ -365,20 +356,34 @@ void b_Floyd(){
 			}
 		}
 	}
+}
 
-	//HERE IS PRINT SHIT
+void b_Warshall() { 
+
+	cre_adjmat(G);
+
+	int i,j,k,size=b_size(G);
 
 	for(i=0;i<size;i++){
 		for(j=0;j<size;j++){
-			printf(" %d ",waymat[i][j]);
+			if(adjmat[i][j]==0 && i!=j)
+				waymat[i][j]=0;
+			else
+				waymat[i][j]=1;
 		}
-		printf("\n");
 	}
-	printf("\n");
-	
+
+	for(k=0;k<size;k++){
+		for(i=0;i<size;i++){
+			for(j=0;j<size;j++){
+				if(waymat[i][j]==0){
+					waymat[i][j] = (waymat[i][k] && waymat[k][j]);
+				}
+			}
+		}
+	}
 }
 
-void b_Warshall() { /* TO DO */ }
 void b_Prim()     { 
 	
 	noderef Vn = create_n(get_nname(G),0);
@@ -386,6 +391,7 @@ void b_Prim()     {
 	noderef En = (noderef)NULL, T, S, U, N;
 	int least;
 	
+
 	while(b_size(G) > b_size(Vn)){
 		least = INT_MAX;
 		S = Vn;
@@ -402,53 +408,141 @@ void b_Prim()     {
 			}
 			S = get_nodes(S);
 		}
-		printf("\nbara namn på noderna U = %c och N = %c\n",get_nname(U),get_nname(N));
-	
+
 		Vn = b_addn(get_nname(U),Vn);
 		set_edges(b_findn(get_nname(U),Vn),get_edges(b_findn(get_nname(U),G)));
 
 		En = b_addn(get_nname(U),En);
 		set_edges(b_findn(get_nname(U),En),create_n(get_nname(N),least));
-
-		printf("\n");
-		T=En;
-		while(!is_empty(T)){
-			printf(" %c ",get_nname(T));
-			T = get_nodes(T);
-		}
-
-		printf("\n");
-
-		T = En;
-		printf("\n");
-		while(!is_empty(T)){
-			printf("   %c och edgen är %d", get_nname(T), get_ninfo(get_edges(T)));
-			T = get_nodes(T);
-		}
-		printf("\n");
+		
+		dist[get_pos(get_nname(U))] = least;
+		close[get_pos(get_nname(U))] = get_nname(N);
 
 	}
+}
 
-	printf("\n\nResultat:\n");
-	while(!is_empty(Vn)){
-		printf(" %c ",get_nname(Vn));
-		Vn = get_nodes(Vn);
-	}
-	printf("\n\n");
+void b_dispSPT()  { 
 
+	int i;
+	noderef T=get_nodes(G);
 
-	T = En;
+	printf("Dijkstra\n");
+	printf("----------------------\n");
+	printf("     ");
+
 	while(!is_empty(T)){
-		printf(" %c - %d - %c  \n",get_nname(T),get_ninfo(get_edges(T)),get_nname(get_edges(T)));
+		printf("  %c  ", get_nname(T));
+		T = get_nodes(T);
+	}
+	printf("\n");
+	printf("----------------------\n");
+
+	printf("D:   ");
+	for(i=1;i<b_size(G);i++){
+		if(D[i]==INT_MAX)
+			printf("   -   ");
+		else
+			printf("  %d  ",D[i]);
+	}
+
+	printf("\n");
+	printf("E:   ");
+	for(i=1;i<b_size(G);i++)
+		printf("  %c  ",E[i]);
+
+	printf("\n");
+	printf("L:   ");
+	for(i=1;i<b_size(G);i++){
+		if(L[i]==INT_MAX)
+			printf("   -   ");
+		else
+			printf("  %d  ",L[i]);
+	}
+	printf("\n");
+	printf("----------------------\n");
+
+	free(D);
+	free(E);
+	free(L);
+}
+
+void b_dispFm(){ 
+	int i,j,size=b_size(G);
+	noderef T = G;
+
+	printf("Floyd's\n");
+	printf("--------------------------\n");
+	printf("   |");
+	while(!is_empty(T)){
+		printf(" %c ",get_nname(T));
 		T = get_nodes(T);
 	}
 
+	printf("\n");
+	printf("--------------------------\n");	
+	T = G;
+	for(i=0;i<size;i++){
+		printf(" %c |",get_nname(T));
+		for(j=0;j<size;j++){
+			printf(" %d ",waymat[i][j]);
+		}
+		T = get_nodes(T);
+		printf("\n");
+	}
+	printf("\n");
 }
 
-void b_dispSPT()  { /* TO DO */ }
-void b_dispFm()   { /* TO DO */ }
-void b_dispTC()   { /* TO DO */ }
-void b_dispMST()  { /* TO DO */ }
+void b_dispTC(){ 
+	int i,j,size=b_size(G);
+	noderef T = G;
+
+	printf("Warshall's\n");
+	printf("--------------------------\n");
+	printf("   |");
+
+	while(!is_empty(T)){
+		printf(" %c ",get_nname(T));
+		T = get_nodes(T);
+	}
+
+	for(i=0;i<size;i++){
+		printf(" %c |",get_nname(T));
+		for(j=0;j<size;j++){
+			printf(" %d ",waymat[i][j]);
+		}
+		T = get_nodes(T);
+		printf("\n");
+	}
+	printf("\n");
+}
+
+void b_dispMST()  { 
+	
+	int i,size=b_size(G);
+	noderef T = G;
+
+	printf("Prim's\n");
+	printf("-------------------\n");
+	while(!is_empty(T)){
+		printf(" %c ",get_nname(T));
+		T = get_nodes(T);
+	}
+	printf("\n");
+	printf("-------------------\n");
+	printf("   ");
+	for(i=1;i<size;i++){
+		printf(" %d ",dist[i]);
+	}
+
+	printf("\n");
+	printf("   ");
+	for(i=1;i<size;i++){
+		printf(" %c ",close[i]);
+	}
+	printf("\n");
+	printf("-------------------\n");
+
+}
 
 /****************************************************************************/
 /* public operations on the node                                            */
@@ -486,6 +580,5 @@ void be_Prim()      { b_Prim();     b_dispMST(); }
 /****************************************************************************/
 /* end of basic functions                                                   */
 /****************************************************************************/
-
 
 
